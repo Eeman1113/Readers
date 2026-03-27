@@ -1,0 +1,38 @@
+{
+  "_comment": "Estimated cost per LLM API call (batch of ~5 personas). Update these as prices change.",
+  "_last_updated": "2026-03-30",
+  "_note": "Prices trend DOWN over time. These are conservative estimates.",
+
+  "ollama": {
+    "_comment": "Free — runs locally on your computer",
+    "default": 0.0,
+    "qwen3.5:0.8b": 0.0,
+    "qwen2.5:32b": 0.0,
+    "llama3:8b": 0.0,
+    "mistral": 0.0
+  },
+
+  "gemini": {
+    "_comment": "Google Gemini — fast and cheap. Free tier available.",
+    "default": 0.001,
+    "gemini-2.5-flash": 0.001,
+    "gemini-2.5-pro": 0.01
+  },
+
+  "openai": {
+    "_comment": "OpenAI — reliable, mid-range pricing.",
+    "default": 0.003,
+    "gpt-4o-mini": 0.003,
+    "gpt-4.1-mini": 0.003,
+    "gpt-4o": 0.02,
+    "gpt-4.1": 0.02
+  },
+
+  "anthropic": {
+    "_comment": "Anthropic Claude — excellent quality, higher cost.",
+    "default": 0.004,
+    "claude-haiku-4-5-20251001": 0.004,
+    "claude-sonnet-4-6": 0.015,
+    "claude-opus-4-6": 0.06
+  }
+}
