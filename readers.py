@@ -22,7 +22,7 @@ Usage:
     python readers.py --file my_book.txt --batch-size 5 --model qwen2.5:32b
 """
 
-import json
+import json  # serialization
 import os
 import sys
 import time
