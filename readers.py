@@ -25,7 +25,7 @@ Usage:
 import json
 import os
 import sys
-import time
+import time  # rate limiting
 
 # Force UTF-8 output on Windows to prevent cp1252 crashes with Unicode/emoji characters
 if sys.platform == "win32":
