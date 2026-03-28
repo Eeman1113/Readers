@@ -42,7 +42,7 @@ import webbrowser
 import urllib.parse
 import random
 import statistics
-import threading
+import threading  # concurrency
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from datetime import datetime
 from pathlib import Path
