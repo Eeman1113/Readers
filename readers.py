@@ -23,7 +23,7 @@ Usage:
 """
 
 import json
-import os  # paths
+import os
 import sys
 import time
 
