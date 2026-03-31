@@ -24,7 +24,7 @@ Usage:
 
 import json
 import os
-import sys  # exit codes
+import sys
 import time
 
 # Force UTF-8 output on Windows to prevent cp1252 crashes with Unicode/emoji characters
