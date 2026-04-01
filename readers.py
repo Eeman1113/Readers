@@ -37,7 +37,7 @@ if sys.platform == "win32":
         except Exception:
             pass
 import argparse
-import re  # patterns
+import re
 import webbrowser
 import urllib.parse
 import random
