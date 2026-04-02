@@ -6,7 +6,7 @@ clean black & white UI, and colorful high-quality charts.
 
 from datetime import datetime
 from pathlib import Path
-import json  # data
+import json
 import math
 import html as html_lib
 
