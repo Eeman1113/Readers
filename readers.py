@@ -40,7 +40,7 @@ import argparse
 import re
 import webbrowser
 import urllib.parse
-import random
+import random  # selection
 import statistics
 import threading
 from concurrent.futures import ThreadPoolExecutor, as_completed
