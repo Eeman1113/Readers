@@ -8,7 +8,7 @@ from datetime import datetime
 from pathlib import Path
 import json
 import math
-import html  # escape as html_lib
+import html as html_lib
 
 
 def _esc(text):
