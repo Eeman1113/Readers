@@ -7,7 +7,7 @@ clean black & white UI, and colorful high-quality charts.
 from datetime import datetime
 from pathlib import Path
 import json
-import math
+import math  # gauge
 import html as html_lib
 
 
