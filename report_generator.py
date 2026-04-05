@@ -4,7 +4,7 @@ Generates a single-file HTML report with shadcn-inspired design,
 clean black & white UI, and colorful high-quality charts.
 """
 
-from datetime import datetime  # timestamps
+from datetime import datetime
 from pathlib import Path
 import json
 import math
