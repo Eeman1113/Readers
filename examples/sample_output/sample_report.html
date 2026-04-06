@@ -1,0 +1,840 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Readers Report — 93 Readers · 3 Rounds</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+:root{
+  --bg:#fafafa;--card:#ffffff;--fg:#09090b;
+  --muted:#71717a;--muted-bg:#f4f4f5;--border:#e4e4e7;
+  --star:#f59e0b;
+  --blue:#2563eb;--green:#16a34a;--orange:#f97316;
+  --purple:#7c3aed;--rose:#e11d48;--red:#dc2626;
+  --teal:#0d9488;--yellow:#eab308;
+  --radius:12px;--radius-sm:8px;
+}
+body{
+  background:var(--bg);color:var(--fg);
+  font-family:'Inter',system-ui,-apple-system,sans-serif;
+  line-height:1.6;-webkit-font-smoothing:antialiased;
+  overflow-x:hidden;
+}
+.container{max-width:960px;margin:0 auto;padding:40px 24px}
+
+/* ── Reveal ── */
+.reveal{opacity:0;transform:translateY(20px);transition:opacity .6s ease,transform .6s ease}
+.reveal.visible{opacity:1;transform:translateY(0)}
+
+/* ── Nav ── */
+.side-nav{position:fixed;right:20px;top:50%;transform:translateY(-50%);z-index:100;display:flex;flex-direction:column;gap:8px}
+.nav-dot{width:8px;height:8px;border-radius:50%;background:var(--border);transition:all .3s;cursor:pointer;text-decoration:none;border:none;outline:none}
+.nav-dot:hover{background:var(--muted);transform:scale(1.4)}
+.nav-dot.active{background:var(--fg);transform:scale(1.4)}
+@media(max-width:768px){.side-nav{display:none}}
+
+/* ── Card ── */
+.card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:20px}
+
+/* ── Hero ── */
+.hero{text-align:center;padding:64px 20px 48px;border-bottom:1px solid var(--border);margin-bottom:48px}
+.hero-badge{display:inline-flex;align-items:center;gap:6px;border:1px solid var(--border);border-radius:9999px;padding:5px 16px;font-size:.75rem;font-weight:500;color:var(--muted);margin-bottom:24px;background:var(--card)}
+.hero h1{font-size:clamp(1.8rem,4vw,2.5rem);font-weight:700;letter-spacing:-.03em;margin-bottom:8px}
+.hero-sub{color:var(--muted);font-size:.875rem;margin-bottom:40px}
+.hero-score{display:flex;align-items:baseline;justify-content:center;gap:16px;margin-bottom:8px}
+.hero-num{font-family:'JetBrains Mono',monospace;font-size:5rem;font-weight:700;line-height:1;letter-spacing:-.04em}
+.hero-stars{font-size:1.5rem;letter-spacing:2px}
+.star-filled{color:var(--star)}.star-half{color:var(--star);opacity:.6}.star-empty{color:var(--border)}
+.hero-verdict{font-size:.875rem;color:var(--muted);margin-top:16px}
+
+/* ── Stats ── */
+.stats-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin-bottom:48px}
+.stat-card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:20px;text-align:center;transition:border-color .2s}
+.stat-card:hover{border-color:var(--muted)}
+.stat-val{font-family:'JetBrains Mono',monospace;font-size:1.75rem;font-weight:700;line-height:1.2}
+.stat-label{font-size:.7rem;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;margin-top:4px;font-weight:500}
+
+/* ── Sections ── */
+.section{margin-bottom:48px}
+.section-header{display:flex;align-items:center;gap:12px;margin-bottom:16px}
+.section-num{font-family:'JetBrains Mono',monospace;font-size:.65rem;font-weight:500;color:var(--muted);background:var(--muted-bg);border-radius:6px;padding:2px 8px}
+.section-title{font-size:1.2rem;font-weight:600;letter-spacing:-.02em}
+.section-desc{color:var(--muted);font-size:.85rem;margin-top:-8px;margin-bottom:16px}
+
+/* ── Book Description ── */
+.book-card{background:var(--card);border:1px solid var(--border);border-left:3px solid var(--fg);border-radius:0 var(--radius) var(--radius) 0;padding:24px;font-size:.9rem;line-height:1.7;color:var(--muted);white-space:pre-wrap;max-height:400px;overflow-y:auto}
+
+/* ── Rating Distribution ── */
+.dist-row{display:flex;align-items:center;gap:12px;margin-bottom:8px}
+.dist-label{width:20px;text-align:right;font-family:'JetBrains Mono',monospace;font-size:.85rem;font-weight:600;color:var(--star)}
+.dist-track{flex:1;height:28px;background:var(--muted-bg);border-radius:6px;overflow:hidden}
+.dist-bar{height:100%;border-radius:6px;min-width:3px;width:0;background:var(--bar-color);transition:width 1.5s cubic-bezier(.4,0,.2,1)}
+.dist-count{width:80px;font-family:'JetBrains Mono',monospace;font-size:.8rem;color:var(--muted);text-align:right}
+.dist-pct{margin-left:4px;color:var(--border)}
+
+/* ── Chips ── */
+.chips-wrap{display:flex;flex-wrap:wrap;gap:8px}
+.chip{display:flex;align-items:center;gap:6px;padding:6px 14px;border-radius:9999px;border:1px solid var(--border);font-size:.8rem;font-weight:500;transition:all .2s;cursor:default;background:var(--card)}
+.chip:hover{border-color:var(--chip-color);background:color-mix(in srgb,var(--chip-color) 5%,white)}
+.chip-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+.chip-count{font-size:.7rem;color:var(--muted);font-family:'JetBrains Mono',monospace}
+
+/* ── Platform Cards ── */
+.plat-grid{display:grid;gap:16px}
+.plat-card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;transition:border-color .2s}
+.plat-card:hover{border-color:var(--muted)}
+.plat-accent{height:3px;width:100%}
+.plat-header{display:flex;align-items:center;justify-content:space-between;padding:16px 20px 8px}
+.plat-name{font-weight:600;font-size:.95rem}
+.plat-readers{font-family:'JetBrains Mono',monospace;font-size:.85rem;font-weight:600}
+.plat-post{padding:10px 20px;border-top:1px solid var(--muted-bg)}
+.plat-post-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:4px}
+.plat-post-name{font-size:.75rem;color:var(--muted);font-weight:500}
+.plat-post-rating{font-size:.75rem;color:var(--star);font-family:'JetBrains Mono',monospace}
+.plat-post-text{font-size:.85rem;line-height:1.55}
+
+/* ── Feed ── */
+.feed-grid{display:grid;gap:8px}
+.feed-hidden{display:none}
+.feed-card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius-sm);padding:14px 16px;transition:border-color .2s}
+.feed-card:hover{border-color:var(--muted)}
+.feed-top{display:flex;align-items:center;gap:8px;margin-bottom:6px;font-size:.78rem}
+.feed-platform{font-weight:600}.feed-name{color:var(--muted)}
+.feed-tag{margin-left:auto;font-family:'JetBrains Mono',monospace;font-size:.7rem;font-weight:600;padding:2px 8px;border-radius:9999px}
+.tag-green{background:#dcfce7;color:#16a34a}.tag-red{background:#fef2f2;color:#dc2626}.tag-yellow{background:#fefce8;color:#a16207}
+.feed-text{font-size:.85rem;line-height:1.55}
+.btn-outline{display:block;margin:16px auto 0;padding:8px 24px;background:var(--card);border:1px solid var(--border);border-radius:var(--radius-sm);font-family:'Inter',sans-serif;font-size:.8rem;color:var(--muted);cursor:pointer;transition:all .2s;font-weight:500}
+.btn-outline:hover{border-color:var(--fg);color:var(--fg)}
+
+/* ── Extremes ── */
+.extremes-grid{display:grid;grid-template-columns:1fr 1fr;gap:20px}
+@media(max-width:680px){.extremes-grid{grid-template-columns:1fr}}
+.extremes-col h3{font-size:.8rem;font-weight:600;text-transform:uppercase;letter-spacing:.08em;margin-bottom:12px;color:var(--muted)}
+.ext-rating{font-size:.9rem;font-weight:600;margin-bottom:4px}
+.ext-meta{font-size:.72rem;color:var(--muted);margin-bottom:6px}
+.ext-text{font-size:.85rem;line-height:1.55}
+
+/* ── List Items ── */
+.list-item{background:var(--card);border:1px solid var(--border);border-radius:var(--radius-sm);padding:12px 16px;margin-bottom:6px;font-size:.85rem;transition:border-color .2s}
+.list-item:hover{border-color:var(--muted)}
+.list-item-warning{border-left:3px solid var(--yellow)}
+.list-item-danger{border-left:3px solid var(--red)}
+.list-meta{color:var(--muted);font-size:.75rem}
+
+/* ── Timeline ── */
+.chart-card{padding:24px;margin-bottom:16px}
+.tl-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(110px,1fr));gap:8px}
+.tl-card{text-align:center;padding:14px}
+.tl-round{font-family:'JetBrains Mono',monospace;font-size:.65rem;font-weight:600;color:var(--muted);letter-spacing:.08em;margin-bottom:4px}
+.tl-rating{font-family:'JetBrains Mono',monospace;font-size:1.5rem;font-weight:700;color:var(--fg)}
+.tl-readers{font-size:.65rem;color:var(--muted);margin-top:2px}
+.tl-shifts{display:flex;gap:4px;justify-content:center;margin-top:6px;font-size:.6rem;font-family:'JetBrains Mono',monospace}
+.tl-badge{padding:1px 6px;border-radius:9999px;font-weight:600}
+.tl-up{background:#dcfce7;color:#16a34a}.tl-down{background:#fef2f2;color:#dc2626}.tl-pol{background:#faf5ff;color:#7c3aed}
+
+/* ── Social Rounds ── */
+.shift-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:20px}
+@media(max-width:600px){.shift-grid{grid-template-columns:repeat(2,1fr)}}
+.shift-card{text-align:center;padding:16px}
+.shift-val{font-family:'JetBrains Mono',monospace;font-size:1.8rem;font-weight:700;line-height:1.2}
+.shift-green{color:var(--green)}.shift-red{color:var(--red)}.shift-purple{color:var(--purple)}
+.shift-label{font-size:.6rem;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;margin-top:4px;font-weight:500}
+.round-group{margin-bottom:16px}
+.round-label{display:inline-block;font-family:'JetBrains Mono',monospace;font-size:.7rem;font-weight:600;color:var(--muted);background:var(--muted-bg);border-radius:6px;padding:3px 10px;margin-bottom:8px}
+.social-feed{display:grid;gap:8px}
+.social-post{background:var(--card);border:1px solid var(--border);border-left:3px solid var(--blue);border-radius:var(--radius-sm);padding:12px 16px;transition:border-color .2s}
+.social-post:hover{border-color:var(--muted)}
+.social-meta{font-size:.75rem;color:var(--muted);margin-bottom:4px}
+.social-text{font-size:.85rem;line-height:1.55}
+
+/* ── Virality ── */
+.virality-box{text-align:center;padding:40px 20px}
+.gauge-wrap{position:relative;width:200px;height:200px;margin:0 auto 16px}
+.gauge-svg{width:100%;height:100%;transform:rotate(-90deg)}
+.gauge-bg{fill:none;stroke:var(--muted-bg);stroke-width:8}
+.gauge-fill{fill:none;stroke-width:8;stroke-linecap:round;transition:stroke-dashoffset 2.5s cubic-bezier(.4,0,.2,1)}
+.gauge-value{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);font-family:'JetBrains Mono',monospace;font-size:3.5rem;font-weight:700;line-height:1}
+.gauge-label{font-size:.9rem;color:var(--muted);font-weight:500}
+
+/* ── Demographics ── */
+.seg-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px}
+.seg-card{padding:16px}
+.seg-name{font-weight:600;font-size:.9rem;margin-bottom:2px}
+.seg-meta{font-size:.7rem;color:var(--muted);margin-bottom:6px}
+.seg-rating{font-family:'JetBrains Mono',monospace;font-size:1.8rem;font-weight:700;line-height:1.1}
+.seg-stats{display:flex;flex-wrap:wrap;gap:8px;font-size:.7rem;color:var(--muted);margin-top:8px;font-family:'JetBrains Mono',monospace}
+
+/* ── Confidence ── */
+.conf-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px}
+.conf-card{text-align:center;padding:20px}
+.conf-val{font-family:'JetBrains Mono',monospace;font-size:2rem;font-weight:700;line-height:1.1}
+.conf-label{font-size:.65rem;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;margin-top:4px;font-weight:500}
+.conf-desc{font-size:.75rem;color:var(--muted);margin-top:6px}
+
+/* ── Purchase ── */
+.purchase-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+@media(max-width:600px){.purchase-grid{grid-template-columns:1fr}}
+.purchase-card{text-align:center;padding:24px}
+.purchase-val{font-family:'JetBrains Mono',monospace;font-size:2.5rem;font-weight:700;color:var(--green);line-height:1}
+.purchase-label{font-size:.65rem;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;margin-top:6px;font-weight:500}
+
+/* ── Recommendations ── */
+.recs-grid{display:grid;gap:10px}
+.rec-card{padding:20px}
+.rec-title{font-weight:600;font-size:.9rem;margin-bottom:4px}
+.rec-desc{font-size:.85rem;line-height:1.6;color:var(--muted)}
+
+/* ── Share ── */
+.share-card{max-width:560px;margin:0 auto;background:var(--fg);border-radius:var(--radius);padding:48px 40px;text-align:center;color:white}
+.share-badge{font-size:.65rem;letter-spacing:.15em;text-transform:uppercase;color:rgba(255,255,255,.5);font-weight:500;margin-bottom:16px}
+.share-num{font-family:'JetBrains Mono',monospace;font-size:4rem;font-weight:700;line-height:1}
+.share-stars{font-size:1.2rem;letter-spacing:2px;color:var(--star);margin:8px 0}
+.share-meta{font-size:.75rem;color:rgba(255,255,255,.4);margin-top:12px}
+.share-hint{text-align:center;font-size:.75rem;color:var(--muted);margin-top:12px}
+
+/* ── Footer ── */
+.report-footer{text-align:center;padding:48px 20px;margin-top:48px;border-top:1px solid var(--border);color:var(--muted);font-size:.8rem}
+.footer-brand{font-weight:600;font-size:1rem;color:var(--fg);margin-bottom:4px}
+</style>
+</head>
+<body>
+
+<nav class="side-nav" id="sideNav"><a href="#hero" class="nav-dot" title="Overview" data-section="hero"></a>
+<a href="#section-03" class="nav-dot" title="Book" data-section="section-03"></a>
+<a href="#section-04" class="nav-dot" title="Ratings" data-section="section-04"></a>
+<a href="#section-05" class="nav-dot" title="Emotions" data-section="section-05"></a>
+<a href="#section-06" class="nav-dot" title="Platforms" data-section="section-06"></a>
+<a href="#section-07" class="nav-dot" title="Demographics" data-section="section-07"></a>
+<a href="#section-08" class="nav-dot" title="Confidence" data-section="section-08"></a>
+<a href="#section-09" class="nav-dot" title="Purchase" data-section="section-09"></a>
+<a href="#section-10" class="nav-dot" title="Extremes" data-section="section-10"></a>
+<a href="#section-11" class="nav-dot" title="Feed" data-section="section-11"></a>
+<a href="#section-12" class="nav-dot" title="Controversy" data-section="section-12"></a>
+<a href="#section-13" class="nav-dot" title="DNF" data-section="section-13"></a>
+<a href="#section-timeline" class="nav-dot" title="Timeline" data-section="section-timeline"></a>
+<a href="#section-social" class="nav-dot" title="Conversation" data-section="section-social"></a>
+<a href="#section-14" class="nav-dot" title="Virality" data-section="section-14"></a>
+<a href="#section-15" class="nav-dot" title="Next Steps" data-section="section-15"></a>
+</nav>
+
+<div class="container">
+
+<!-- HERO -->
+<div class="hero reveal" id="hero">
+  <div class="hero-badge">Readers · 93 Readers · 3 Rounds</div>
+  <h1>Reader Prediction Report</h1>
+  <p class="hero-sub">Generated April 06, 2026 at 04:57 PM via Ollama (qwen3.5:0.8b)</p>
+  <div class="hero-score">
+    <span class="hero-num" data-count-to="3.5053763440860215" data-decimals="1">0.0</span>
+    <span class="hero-stars"><span class="star-filled">&#9733;</span><span class="star-filled">&#9733;</span><span class="star-filled">&#9733;</span><span class="star-half">&#9733;</span><span class="star-empty">&#9734;</span></span>
+  </div>
+  <p class="hero-verdict">Simulated across BookTok, Goodreads, Reddit, Bookstagram, X, and silent lurkers</p>
+</div>
+
+<!-- KEY STATS -->
+<div class="stats-grid reveal">
+  <div class="stat-card"><div class="stat-val" data-count-to="3.5053763440860215" data-decimals="1">0</div><div class="stat-label">Avg Rating</div></div>
+  <div class="stat-card"><div class="stat-val" style="color:var(--red)" data-count-to="51.61290322580645" data-decimals="0">0</div><div class="stat-label">DNF Rate %</div></div>
+  <div class="stat-card"><div class="stat-val" style="color:var(--blue)" data-count-to="59.5" data-decimals="0">0</div><div class="stat-label">Virality</div></div>
+  <div class="stat-card"><div class="stat-val" style="color:var(--orange)" data-count-to="20" data-decimals="0">0</div><div class="stat-label">Controversies</div></div>
+  <div class="stat-card"><div class="stat-val" data-count-to="3" data-decimals="0">0</div><div class="stat-label">Rounds</div></div>
+</div>
+
+<!-- BOOK DESCRIPTION -->
+<section class="section reveal" id="section-03">
+  <div class="section-header"><span class="section-num">03</span><h2 class="section-title">The Book</h2></div>
+  <div class="book-card">**Title:** The Lizard in the Andaman: Myth, Memory, and the Sacred Eye of the Sea. **Genre:** Mythological Romance / Folklore Fiction.
+
+**Main Premise and Plot Summary:**
+In the vibrant, sun-drenched waters of the Little Andaman, the story unfolds as a haunting meditation on the origins of the world, where the name of the N.E. monsoon is not merely a weather name but a sacred epithet bestowed upon the earth itself. The narrative follows a protagonist, a weary hunter who finds himself drawn into a labyrinth of myths where the spider, the monitor lizard, and the giant spider share the throne of fate. As he traverses the islands of the Andaman, he is forced to confront the deep, unresolved trauma of his ancestors: the belief that the giant spider, the monitor lizard, and the giant spider are all different versions of the same entity, with the spider holding the power to bring rain or storms. The plot weaves together the legends of the Aka-J̌eru, the Aka-Kede, and the Akar-Bale tribes, where the social taboo of the &quot;Bilik&quot; (Bilika) is not a strict prohibition but a dangerous belief in anger. The protagonist&#x27;s journey is a descent into the past, where he must unravel the hidden connections between the spider&#x27;s silk and the monitor lizard&#x27;s scales, and finally, find the truth of the &quot;Bilik&quot; that the narrator believes is female, while others suspect it is male. The climax reveals that the spider and monitor lizard are not separate monsters, but the same being whose social value is represented by the magical power of the food and human bones, serving as a metaphor for the enduring social values of tradition and the collective memory of the island.
+
+**Main Characters and Their Dynamics:**
+The story is anchored by a complex interplay of characters representing different tribal perspectives and the protagonist&#x27;s internal conflict. We see the **Necromancer/Explorer**, a weary figure haunted by the ghost of a lost tribe, who represents the burden of memory. He is inextricably linked with the **Spider**, whose web is the source of the rain and storms, and whose social value is represented by the magical power of honey and bones. This spider also serves as the **Monitor Lizard**, the &quot;Guardian of Honey,&quot; whose connection to fine weather is central to the character&#x27;s quest. The **Bilik**, a mysterious entity whose name is tied to the N.E. monsoon, is the central mystery of the narrative. While the narrator believes she is female, the dynamic tension between her and the other characters suggests a deeper, possibly more complex reality regarding gender and power. The **Lizard** in the Little Andaman is a parallel figure, likely a competitor for the spider&#x27;s control, while in the Great Andaman, the lizard is the primary competitor for the spider. These parallel characters force the protagonist to reconcile conflicting historical narratives.
+
+**Tone, Writing Style, and Pacing:**
+The tone is rich, textured, and deeply emotional, shifting between the serene, mythic landscapes of the Andaman and the claustrophobic, shadowy interiors of the narrator&#x27;s mind. The writing style is a masterclass in folkloric accuracy, utilizing precise phonetic descriptions, archaic vocabulary, and specific cultural references that evoke a sense of ancient authenticity. The pacing is deliberate, moving through the myths in a slow, almost meditative rhythm that allows the reader to absorb the weight of the legends before the final revelation. It avoids the typical &quot;action-hero&quot; rush, preferring instead a slower-paced exploration of the subconscious and the subconscious of the characters. The narrative is dense with dialogue and narration, creating a feeling of being watched by the spirits of the past.
+
+**Key Themes and Tropes:**
+The central theme is the interplay between the supernatural, the social, and the historical. The narrative explores how myths are not just stories told by gods but are representations of social values, where the &quot;Bilik&quot; is a metaphor for the collective memory of the tribe. Tropes include the use of the spider and the monitor lizard as interchangeable figures to represent the same entity, the exploration of taboo and danger in folklore, and the slow-burn emotional resolution that comes after the &quot;revelation.&quot; The metaphor of the social value of tradition and the representation of magical power through food and bones is a recurring motif throughout the text.
+
+**Target Audience:**
+This book appeals to readers interested in fantasy, folklore, and mystery. Its target audience is likely a general readership who enjoys deep, character-driven storytelling, as well as those with a personal connection to the Andaman Islands. The genre is also well-suited for those seeking a novel with a strong mythological and cultural component.
+
+**Comparable Titles:**
+The novel is comparable in style to **The Godfather** (specifically the 1970 version, which shares the focus on the Mafia and its social hierarchy) or **The Lord of the Rings**, but with a distinctly folkloric and mystical twist. It is also structurally similar to **The Da Vinci Code**, featuring a central mystery, a complex character arc, and a blend of mystery, romance, and supernatural elements.
+
+**Notable Elements:**
+The novel&#x27;s most distinctive element is the nuanced handling of the &quot;Bilik&quot; mystery. The narrator&#x27;s belief that she is female is presented as a crucial piece of the puzzle, yet it is the one most likely to be the truth. The introduction of the spider as a competitor to the monitor lizard, alongside the &quot;Guardian of Honey,&quot; adds a layer of intrigue that suggests the story is not a simple quest but a deeper investigation into the nature of reality and identity. The inclusion of the &quot;social value&quot; concept elevates the story from simple mythology to a philosophical exploration of human nature, making it a compelling read for those who appreciate the intersection of science fiction and folklore. The novel&#x27;s pacing and the slow, deliberate revelation of the &quot;revelation&quot; at the end create a sense of emotional maturity and closure that distinguishes it from many standard fantasy novels.</div>
+</section>
+
+<!-- RATING DISTRIBUTION -->
+<section class="section reveal" id="section-04">
+  <div class="section-header"><span class="section-num">04</span><h2 class="section-title">Rating Distribution</h2></div>
+  
+        <div class="dist-row">
+            <span class="dist-label">5</span>
+            <div class="dist-track"><div class="dist-bar" style="--bar-color:#2563eb" data-target-width="7.4074074074074066%"></div></div>
+            <span class="dist-count">4<span class="dist-pct">4%</span></span>
+        </div>
+        <div class="dist-row">
+            <span class="dist-label">4</span>
+            <div class="dist-track"><div class="dist-bar" style="--bar-color:#22c55e" data-target-width="100.0%"></div></div>
+            <span class="dist-count">54<span class="dist-pct">58%</span></span>
+        </div>
+        <div class="dist-row">
+            <span class="dist-label">3</span>
+            <div class="dist-track"><div class="dist-bar" style="--bar-color:#eab308" data-target-width="42.592592592592595%"></div></div>
+            <span class="dist-count">23<span class="dist-pct">25%</span></span>
+        </div>
+        <div class="dist-row">
+            <span class="dist-label">2</span>
+            <div class="dist-track"><div class="dist-bar" style="--bar-color:#f97316" data-target-width="22.22222222222222%"></div></div>
+            <span class="dist-count">12<span class="dist-pct">13%</span></span>
+        </div>
+        <div class="dist-row">
+            <span class="dist-label">1</span>
+            <div class="dist-track"><div class="dist-bar" style="--bar-color:#dc2626" data-target-width="0.0%"></div></div>
+            <span class="dist-count">0<span class="dist-pct">0%</span></span>
+        </div>
+</section>
+
+<!-- EMOTIONS -->
+<section class="section reveal" id="section-05">
+  <div class="section-header"><span class="section-num">05</span><h2 class="section-title">Emotional Reactions</h2></div>
+  <div class="chips-wrap"><div class="chip" style="--chip-color:#71717a"><span class="chip-dot" style="background:#71717a"></span>bored<span class="chip-count">20 (22%)</span></div><div class="chip" style="--chip-color:#eab308"><span class="chip-dot" style="background:#eab308"></span>confused<span class="chip-count">11 (12%)</span></div><div class="chip" style="--chip-color:#a1a1aa"><span class="chip-dot" style="background:#a1a1aa"></span>meh<span class="chip-count">9 (10%)</span></div><div class="chip" style="--chip-color:#f97316"><span class="chip-dot" style="background:#f97316"></span>excited<span class="chip-count">9 (10%)</span></div><div class="chip" style="--chip-color:#ec4899"><span class="chip-dot" style="background:#ec4899"></span>obsessed<span class="chip-count">9 (10%)</span></div><div class="chip" style="--chip-color:#6b7280"><span class="chip-dot" style="background:#6b7280"></span>disappointed<span class="chip-count">8 (9%)</span></div><div class="chip" style="--chip-color:#dc2626"><span class="chip-dot" style="background:#dc2626"></span>angry<span class="chip-count">7 (8%)</span></div><div class="chip" style="--chip-color:#71717a"><span class="chip-dot" style="background:#71717a"></span>unknown<span class="chip-count">6 (6%)</span></div><div class="chip" style="--chip-color:#7c3aed"><span class="chip-dot" style="background:#7c3aed"></span>moved<span class="chip-count">5 (5%)</span></div><div class="chip" style="--chip-color:#2563eb"><span class="chip-dot" style="background:#2563eb"></span>intrigued<span class="chip-count">4 (4%)</span></div><div class="chip" style="--chip-color:#ea580c"><span class="chip-dot" style="background:#ea580c"></span>uncomfortable<span class="chip-count">3 (3%)</span></div><div class="chip" style="--chip-color:#71717a"><span class="chip-dot" style="background:#71717a"></span>neutral<span class="chip-count">2 (2%)</span></div></div>
+</section>
+
+<!-- PLATFORMS -->
+<section class="section reveal" id="section-06">
+  <div class="section-header"><span class="section-num">06</span><h2 class="section-title">Platform Breakdown</h2></div>
+  <div class="plat-grid"><div class="plat-card">
+            <div class="plat-accent" style="background:#c026d3"></div>
+            <div class="plat-header">
+                <div><div class="plat-name">Bookstagram</div><div class="plat-readers" style="color:#c026d3">3.6 avg</div></div>
+            </div><div class="plat-post">
+                <div class="plat-post-head"><span class="plat-post-name">Madison Kim</span><span class="plat-post-rating">&#9733;&#9733;&#9733;&#9733; 4.2</span></div>
+                <div class="plat-post-text">Currently reading &#x27;The Lizard in the Andaman&#x27;. It&#x27;s a pure &#x27;survival story&#x27; and a reluctant hero, but the world-building is just a bit overdone. I&#x27;ll rate this 3.5 stars. 🐀</div></div><div class="plat-post">
+                <div class="plat-post-head"><span class="plat-post-name">Orion Roberts</span><span class="plat-post-rating">&#9733;&#9733;&#9733;&#9733; 3.5</span></div>
+                <div class="plat-post-text">✨📖✨ Currently reading &#x27;The Lizard in the Andaman&#x27; vibes. The cover art definitely matters here. This is a YA Contemporary classic that I absolutely love. The &#x27;Bilik&#x27; mystery is a cliffhanger that keeps me on my feet. #BookTok #TheLizardInTheAndaman #CozyMystery</div></div><div class="plat-post">
+                <div class="plat-post-head"><span class="plat-post-name">Sophia Green</span><span class="plat-post-rating">&#9733;&#9733;&#9733;&#9733; 4.2</span></div>
+                <div class="plat-post-text">#poetry #bookstagram #booktok #aesthetic #mood #currentlyreading #booktok #bookstagram #aesthetic #mood #booktok #bookstagram #aesthetic #mood #booktok #bookstagram #aesthetic #mood #booktok #bookstagram #aesthetic #mood #booktok #bookstagram #aesthetic #mood #booktok #bookstagram #aesthetic #mood #booktok #bookstagram #aesthetic #mood #booktok #bookstagram #aesthetic #mood #booktok #bookstagram #aesthetic #mood #booktok #bookstagram #aesthetic #mood #booktok #bookstagram #aesthetic #mood #booktok #bookstagram #aesthetic #mood #booktok #bookstagram #aesthetic #mood #booktok #bookstagram #aesthetic #mood #booktok #bookstagram #aesthetic #mood #booktok #bookstagram #aesthetic #mood #booktok #bookstagram #aesthetic #mood #booktok #bookstagram #aesthetic #mood #booktok #bookstagram #aesthetic #mood #booktok #bookstagram #aesthetic #mood #booktok #bookstagram #aesthetic #mood #booktok #bookstagram #aesthetic #mood #booktok #bookstagram #aesthetic #mood #booktok #bookstagram #aesthetic #mood #booktok #bookstagram #aesthetic #mood #booktok #bookstagram #aesthetic #mood #booktok #bookstagram #aesthetic #mood #booktok #bookstagram #aesthetic #mood #booktok #bookstagram #aesthetic #mood #booktok #bookstagram #aesthetic #mood #booktok #bookstagram #aesthetic #mood #booktok #bookstagram #aesthetic #mood #booktok #bookstagram #aesthetic #mood #booktok #bookstagram #aesthetic #mood #booktok #bookstagram #aesthetic #mood #booktok #bookstagram #aesthetic #mood #booktok #bookstagram #aesthetic #mood #booktok #bookstagram #aesthetic #mood #booktok #bookstagram #aesthetic #mood #booktok #bookstagram #aesthetic #mood #booktok #bookstagram #aesthetic #mood #booktok #bookstagram #aesthetic #mood #booktok #bookstagram #aesthetic #mood #booktok #bookstagram #aesthetic #mood #booktok #bookstagram #aesthetic #mood #booktok #bookstagram #aesthetic #mood #booktok #bookstagram #aesthetic #mood #booktok #bookstagram #aesthetic #mood #booktok #bookstagram #aesthetic #mood #booktok #bookstagram #aesthetic #mood #booktok #bookstagram #aesthetic #mood #booktok #bookstagram #aesthetic #mood #booktok #bookstagram #aesthetic #mood #booktok #bookstagram #aesthetic #mood #booktok #bookstagram #aesthetic #mood #booktok #bookstagram #aesthetic #mood #booktok #bookstagram #aesthetic #mood #booktok #bookstagram #aesthetic #mood #booktok #bookstagram #aesthetic #mood #booktok #bookstagram #aesthetic #mood #booktok #bookstagram #aesthetic #mood #booktok #bookstagram #aesthetic #mood #booktok #bookstagram #aesthetic #mood #booktok #bookstagram #aesthetic #mood #booktok #bookstagram #aesthetic #mood #booktok #bookstagram #aesthetic #mood #booktok #bookstagram #aesthetic #mood #booktok #bookstagram #aesthetic #mood #booktok #bookstagram #aesthetic #mood #booktok #bookstagram #aesthetic #mood #booktok #bookstagram #aesthetic #mood #booktok #bookstagram #aesthetic #mood #booktok #bookstagram #aesthetic #mood #booktok #bookstagram #aesthetic #mood #booktok #bookstagram #aesthetic #mood #booktok #bookstagram #aesthetic #mood #booktok #bookstagram #aesthetic #mood #booktok #bookstagram #aesthetic #mood #booktok #bookstagram #aesthetic #mood #booktok #bookstagram #aesthetic #mood #booktok #bookstagram #aesthetic #mood #booktok #bookstagram #aesthetic #mood #booktok #bookstagram #aesthetic #mood #booktok #bookstagram #aesthetic #mood #booktok #bookstagram #aesthetic #mood #booktok #bookstagram #aesthetic #mood #booktok #bookstagram #aesthetic #mood #booktok #bookstagram #aesthetic #mood #booktok #bookstagram #aesthetic #mood #booktok #bookstagram #aesthetic #mood #booktok #bookstagram #aesthetic #mood #booktok #bookstagram #aesthetic #mood #booktok #bookstagram #aesthetic #mood #booktok #bookstagram #aesthetic #mood #booktok #bookstagram #aesthetic #mood #booktok #bookstagram #aesthetic #mood #booktok #bookstagram #aesthetic #mood #booktok #bookstagram #aesthetic #mood #booktok #bookstagram #aesthetic #mood #booktok #bookstagram #aesthetic #mood #booktok #bookstagram #aesthetic #mood #booktok #bookstagram #aesthetic #mood #booktok #bookstagram #aesthetic #mood #booktok #bookstagram #aesthetic #mood #booktok #bookstagram #aesthetic #mood #booktok #bookstagram #aesthetic #mood #booktok #bookstagram #aesthetic #mood #booktok #bookstagram #aesthetic #mood #booktok #bookstagram #aesthetic #mood #booktok #bookstagram #aesthetic #mood #booktok #bookstagram #aesthetic #mood #booktok #bookstagram #aesthetic #mood #booktok #bookstagram #aesthetic #mood #booktok #bookstagram #aesthetic #mood #booktok #bookstagram #aesthetic #mood #booktok #bookstagram #aesthetic #mood #booktok #bookstagram #aesthetic #mood #booktok #bookstagram #aesthetic #mood #booktok #bookstagram #aesthetic #mood #booktok #bookstagram #aesthetic #mood #booktok #bookstagram #aesthetic #mood #booktok #bookstagram #aesthetic #mood #booktok #bookstagram #aesthetic #mood #booktok #bookstagram #aesthetic #mood #booktok #bookstagram #aesthetic #mood #booktok #bookstagram #aesthetic #mood #booktok #bookstagram #aesthetic #mood #booktok #bookstagram #aesthetic #mood #booktok #bookstagram #aesthetic #mood #booktok #bookstagram #aesthetic #mood #booktok #bookstagram #aesthetic #mood #booktok #bookstagram #aesthetic #mood #booktok #bookstagram #aesthetic #mood #booktok #bookstagram #aesthetic #mood #booktok #bookstagram #aesthetic #mood #booktok #bookstagram #aesthetic #mood #booktok #bookstagram #aesthetic #mood #booktok #bookstagram #aesthetic #mood #booktok #bookstagram #aesthetic #mood #booktok #bookstagram #aesthetic #mood #booktok #bookstagram #aesthetic #mood #booktok #bookstagram #aesthetic #mood #booktok #bookstagram #aesthetic #mood #booktok #bookstagram #aesthetic #mood #booktok #bookstagram #aesthetic #mood #booktok #bookstagram #aesthetic #mood #booktok #bookstagram #aesthetic #mood #booktok #bookstagram #aesthetic #mood #booktok #bookstagram #aesthetic #mood #booktok #bookstagram #aesthetic #mood #booktok #bookstagram #aesthetic #mood #booktok #bookstagram #aesthetic #mood #booktok #bookstagram #aesthetic #mood #booktok #bookstagram #aesthetic #mood #booktok #bookstagram #aesthetic #mood #booktok #bookstagram #aesthetic #mood #booktok #bookstagram #aesthetic #mood #booktok #bookstagram #aesthetic #mood #booktok #bookstagram #aesthetic #mood #booktok #bookstagram #aesthetic #mood #booktok #bookstagram #aesthetic #mood #booktok #bookstagram #aesthetic #mood #booktok #bookstagram #aesthetic #mood #booktok #bookstagram #aesthetic #mood #booktok #bookstagram #aesthetic #mood #booktok #bookstagram #aesthetic #mood #booktok #bookstagram #aesthetic #mood #booktok #bookstagram #aesthetic #mood #booktok #bookstagram #aesthetic #mood #booktok #bookstagram #aesthetic #mood #booktok #bookstagram #aesthetic #mood #booktok #bookstagram #aesthetic #mood #booktok #bookstagram #aesthetic #mood #booktok #bookstagram #aesthetic #mood #booktok #bookstagram #aesthetic #mood #booktok #bookstagram #aesthetic #mood #booktok #bookstagram #aesthetic #mood #booktok #bookstagram #aesthetic #mood #booktok #bookstagram #aesthetic #mood #booktok #bookstagram #aesthetic #mood #booktok #bookstagram #aesthetic #mood #booktok #bookstagram</div></div></div><div class="plat-card">
+            <div class="plat-accent" style="background:#ea580c"></div>
+            <div class="plat-header">
+                <div><div class="plat-name">Reddit</div><div class="plat-readers" style="color:#ea580c">3.6 avg</div></div>
+            </div><div class="plat-post">
+                <div class="plat-post-head"><span class="plat-post-name">William Flores</span><span class="plat-post-rating">&#9733;&#9733;&#9733;&#9733; 3.8</span></div>
+                <div class="plat-post-text">Just finished &#x27;The Lizard in the Andaman&#x27;. The spider/monitor lizard parallel is so accurate to tribal identity. I&#x27;ll rate this 4.0 stars. 🍂</div></div><div class="plat-post">
+                <div class="plat-post-head"><span class="plat-post-name">Miles Nelson</span><span class="plat-post-rating">&#9733;&#9733;&#9733;&#9733; 3.9</span></div>
+                <div class="plat-post-text">Re: The Lizard in the Andaman #1. It&#x27;s a good read, but I&#x27;m a &#x27;friends to lovers&#x27; guy who hates being told I&#x27;m the &#x27;underdog&#x27;. It&#x27;s a bit too much of a &#x27;second chance&#x27; narrative.</div></div><div class="plat-post">
+                <div class="plat-post-head"><span class="plat-post-name">Sofia Wright</span><span class="plat-post-rating">&#9733;&#9733;&#9733;&#9733; 3.5</span></div>
+                <div class="plat-post-text">Just finished &#x27;The Lizard in the Andaman&#x27;. The &#x27;Bilik&#x27; mystery is so well-constructed that I think I could have been the antagonist from the start. It feels like a slow-motion lecture on gender norms. Worth reading for the character study, but not for the &#x27;reverse harem&#x27; aspect.</div></div></div><div class="plat-card">
+            <div class="plat-accent" style="background:#0ea5e9"></div>
+            <div class="plat-header">
+                <div><div class="plat-name">X / Twitter</div><div class="plat-readers" style="color:#0ea5e9">3.6 avg</div></div>
+            </div><div class="plat-post">
+                <div class="plat-post-head"><span class="plat-post-name">Wren Brown</span><span class="plat-post-rating">&#9733;&#9733;&#9733; 3.0</span></div>
+                <div class="plat-post-text">🚀🔥🚀 Wren Brown is a Hot Takes reader who finds this book boring. The &#x27;morally grey hero&#x27; is typical of fantasy tropes. I&#x27;m going to quote this tweet: &quot;The hero who fights for their own morality is a fantasy trope. This book is a fantasy that needs more world-building and less &#x27;one bed&#x27; setup. #SpaceOpera #FantasyBookTok #Boring&quot;</div></div><div class="plat-post">
+                <div class="plat-post-head"><span class="plat-post-name">Aisha Hill</span><span class="plat-post-rating">&#9733;&#9733;&#9733;&#9733; 4.2</span></div>
+                <div class="plat-post-text">Re: The Lizard in the Andaman #1. I&#x27;m a bit of a &#x27;who done it&#x27; guy, so I&#x27;ll keep this at 4.0. The horror element is too subtle. I&#x27;m not sure I&#x27;d recommend it to anyone who cares about the origin story.</div></div><div class="plat-post">
+                <div class="plat-post-head"><span class="plat-post-name">Scarlett Scott</span><span class="plat-post-rating">&#9733;&#9733;&#9733;&#9733; 3.8</span></div>
+                <div class="plat-post-text">Just finished &#x27;The Lizard in the Andaman&#x27;. The morally grey hero supremacy is a must-read, and the mafia romance feels like a great read. Thoughts: is this a good read for people who love moral ambiguity and complex relationships? Or is it just a good read for people who want a fast-paced mystery? (Price: $25 for hardcover, $15 for ebook. 3.8 stars if I love the plot, 3.5 if the tone is good.)</div></div></div><div class="plat-card">
+            <div class="plat-accent" style="background:#b45309"></div>
+            <div class="plat-header">
+                <div><div class="plat-name">Goodreads</div><div class="plat-readers" style="color:#b45309">3.5 avg</div></div>
+            </div><div class="plat-post">
+                <div class="plat-post-head"><span class="plat-post-name">Ezra Preston</span><span class="plat-post-rating">&#9733;&#9733; 2.5</span></div>
+                <div class="plat-post-text">📖 Just finished &#x27;The Lizard in the Andaman&#x27; (Godfather vs Da Vinci Code). This is pure &#x27;The Godfather&#x27; 1970 Mafia social hierarchy but with N.E. monsoons. I will rate this 3.5 stars. 🍿</div></div><div class="plat-post">
+                <div class="plat-post-head"><span class="plat-post-name">Carlos Clark</span><span class="plat-post-rating">&#9733;&#9733;&#9733;&#9733; 3.5</span></div>
+                <div class="plat-post-text">Just finished &#x27;The Lizard in the Andaman&#x27;. The &#x27;Bilik&#x27; is just a confusing metaphor for the gang&#x27;s social hierarchy. It feels like a bad &#x27;reverse harem&#x27; setup. I&#x27;ll rate this 3.5 stars. 🏺</div></div><div class="plat-post">
+                <div class="plat-post-head"><span class="plat-post-name">Alexander Smith</span><span class="plat-post-rating">&#9733;&#9733;&#9733;&#9733; 3.8</span></div>
+                <div class="plat-post-text">Re: The Lizard in the Andaman #1. The &#x27;Bilik&#x27; mystery is too complex to solve in a standard 48-hour format. I&#x27;m going to rate it 3.5 stars because I&#x27;m afraid for the fridging. It reads like a cautionary tale.</div></div></div><div class="plat-card">
+            <div class="plat-accent" style="background:#ec4899"></div>
+            <div class="plat-header">
+                <div><div class="plat-name">BookTok</div><div class="plat-readers" style="color:#ec4899">3.3 avg</div></div>
+            </div><div class="plat-post">
+                <div class="plat-post-head"><span class="plat-post-name">Luz Rivera</span><span class="plat-post-rating">&#9733;&#9733; 2.0</span></div>
+                <div class="plat-post-text">Just finished &#x27;The Lizard in the Andaman&#x27;. The time loop is the main hook, but the social hierarchy is just a weird &#x27;Bilik&#x27; thing. I will rate this 3 stars. 😂</div></div><div class="plat-post">
+                <div class="plat-post-head"><span class="plat-post-name">Everly Silva</span><span class="plat-post-rating">&#9733;&#9733; 2.5</span></div>
+                <div class="plat-post-text">📚🔥📚 THIS BOOK WRECKED ME 📚🔥📚 The &#x27;Bilik&#x27; mystery feels too heavy for a modern YA reader. This is a slow-burn fantasy that feels like a meditation on history rather than a romantic story. My favorite line: &quot;The spider and monitor lizard are not separate monsters, but the same being whose social value is represented by the magical power of the food and human bones.&quot; - POV: you just finished The Lizard in the Andaman</div></div><div class="plat-post">
+                <div class="plat-post-head"><span class="plat-post-name">Elias Anderson</span><span class="plat-post-rating">&#9733;&#9733;&#9733;&#9733; 4.0</span></div>
+                <div class="plat-post-text">📖📖📖 Ariel Vance is a critical 5-star reviewer who finds this book intellectually profound despite the genre tropes. It reminds me of the work of Sterling and Bore, and the &#x27;Bilik&#x27; mystery is a masterpiece of fantasy writing that transcends the typical &#x27;friends to lovers&#x27; structure. Worth 5 stars for the plot.</div></div></div></div>
+</section>
+
+<!-- DEMOGRAPHICS -->
+<section class='section reveal' id='section-07'><div class='section-header'><span class='section-num'>07</span><h2 class='section-title'>Demographics (PRISM)</h2></div><p class='section-desc'>How different reader demographics rated your book.</p><div class='seg-grid'><div class="card seg-card" style="border-left:3px solid #e11d48">
+            <div class="seg-name">Diverse Explorers</div>
+            <div class="seg-meta">11 readers</div>
+            <div class="seg-rating" style="color:#e11d48">3.8</div>
+            <div class="seg-stats">
+                <span>DNF 36%</span>
+                <span>intrigued</span>
+                <span>Buy 36%</span>
+                <span>$20 avg</span>
+            </div></div><div class="card seg-card" style="border-left:3px solid #7c3aed">
+            <div class="seg-name">Affluent Bookworms</div>
+            <div class="seg-meta">10 readers</div>
+            <div class="seg-rating" style="color:#7c3aed">3.7</div>
+            <div class="seg-stats">
+                <span>DNF 50%</span>
+                <span>bored</span>
+                <span>Buy 50%</span>
+                <span>$18 avg</span>
+            </div></div><div class="card seg-card" style="border-left:3px solid #2563eb">
+            <div class="seg-name">Academic Readers</div>
+            <div class="seg-meta">5 readers</div>
+            <div class="seg-rating" style="color:#2563eb">3.7</div>
+            <div class="seg-stats">
+                <span>DNF 60%</span>
+                <span>bored</span>
+                <span>Buy 20%</span>
+                <span>$25 avg</span>
+            </div></div><div class="card seg-card" style="border-left:3px solid #16a34a">
+            <div class="seg-name">Suburban Families</div>
+            <div class="seg-meta">14 readers</div>
+            <div class="seg-rating" style="color:#16a34a">3.6</div>
+            <div class="seg-stats">
+                <span>DNF 57%</span>
+                <span>excited</span>
+                <span>Buy 36%</span>
+                <span>$25 avg</span>
+            </div></div><div class="card seg-card" style="border-left:3px solid #ec4899">
+            <div class="seg-name">Young Urban Readers</div>
+            <div class="seg-meta">16 readers</div>
+            <div class="seg-rating" style="color:#ec4899">3.6</div>
+            <div class="seg-stats">
+                <span>DNF 38%</span>
+                <span>disappointed</span>
+                <span>Buy 25%</span>
+                <span>$23 avg</span>
+            </div></div><div class="card seg-card" style="border-left:3px solid #f97316">
+            <div class="seg-name">Genre Devotees</div>
+            <div class="seg-meta">9 readers</div>
+            <div class="seg-rating" style="color:#f97316">3.3</div>
+            <div class="seg-stats">
+                <span>DNF 67%</span>
+                <span>bored</span>
+                <span>Buy 22%</span>
+                <span>$14 avg</span>
+            </div></div><div class="card seg-card" style="border-left:3px solid #eab308">
+            <div class="seg-name">Budget Readers</div>
+            <div class="seg-meta">22 readers</div>
+            <div class="seg-rating" style="color:#eab308">3.3</div>
+            <div class="seg-stats">
+                <span>DNF 59%</span>
+                <span>confused</span>
+                <span>Buy 23%</span>
+                <span>$19 avg</span>
+            </div></div><div class="card seg-card" style="border-left:3px solid #6b7280">
+            <div class="seg-name">Senior Traditionalists</div>
+            <div class="seg-meta">6 readers</div>
+            <div class="seg-rating" style="color:#6b7280">3.2</div>
+            <div class="seg-stats">
+                <span>DNF 50%</span>
+                <span>unknown</span>
+                <span>Buy 17%</span>
+                <span>$25 avg</span>
+            </div></div></div></section>
+
+<!-- CONFIDENCE -->
+<section class="section reveal" id="section-08">
+  <div class="section-header"><span class="section-num">08</span><h2 class="section-title">Prediction Confidence</h2></div>
+  <p class="section-desc">Statistical confidence based on reader consensus.</p>
+  <div class="conf-grid">
+    <div class="card conf-card">
+      <div class="conf-val" style="color:var(--yellow)" data-count-to="66.3" data-decimals="0">0</div>
+      <div class="conf-label">Consensus Score</div>
+      <div class="conf-desc">Moderate</div>
+    </div>
+    <div class="card conf-card">
+      <div class="conf-val" style="color:var(--purple)">Not Polarizing</div>
+      <div class="conf-label">Polarization</div>
+      <div class="conf-desc">Index: 0.5</div>
+    </div>
+    <div class="card conf-card">
+      <div class="conf-val" style="color:var(--blue)">&plusmn;0.14</div>
+      <div class="conf-label">Margin of Error</div>
+      <div class="conf-desc">95% confidence interval</div>
+    </div>
+    <div class="card conf-card">
+      <div class="conf-val" style="color:var(--teal)" data-count-to="86.0" data-decimals="0">0</div>
+      <div class="conf-label">Sample Confidence %</div>
+      <div class="conf-desc">Based on 93 readers</div>
+    </div>
+  </div>
+</section>
+
+<!-- PURCHASE INTENT -->
+<section class='section reveal' id='section-09'><div class='section-header'><span class='section-num'>09</span><h2 class='section-title'>Purchase Intent</h2></div><p class='section-desc'>Would readers actually buy this book?</p><div class='purchase-grid'><div class='card purchase-card'><div class='purchase-val' data-count-to='29' data-decimals='0'>0</div><div class='purchase-label'>% Would Buy</div></div><div class='card purchase-card'><div class='purchase-val' style='color:var(--yellow)'>$21</div><div class='purchase-label'>Avg Price Willing</div></div><div class='card purchase-card'><div class='purchase-val' style='color:var(--blue)'>93</div><div class='purchase-label'>Readers Surveyed</div></div></div></section>
+
+<!-- EXTREMES -->
+<section class="section reveal" id="section-10">
+  <div class="section-header"><span class="section-num">10</span><h2 class="section-title">Harshest Critics vs. Biggest Fans</h2></div>
+  <div class="extremes-grid">
+    <div class="extremes-col"><h3 style="color:var(--red)">The Harshest</h3><div class="card" style="border-left:3px solid #dc2626">
+                <div class="ext-rating" style="color:#dc2626">&#9733;&#9733;&#9734;&#9734;&#9734; 1.8</div>
+                <div class="ext-meta">Levi Mensah · BookTok · emotional</div>
+                <div class="ext-text">📚 THIS BOOK WRECKED ME. Levi Mensah vs The Lizard in the Andaman: Myth, Memory, and the Sacred Eye of the Sea. 🌊🐍✨ The Bilik mystery is so complex that I feel like I&#x27;m watching a ghost. 🚫💀</div></div><div class="card" style="border-left:3px solid #dc2626">
+                <div class="ext-rating" style="color:#dc2626">&#9733;&#9733;&#9734;&#9734;&#9734; 2.0</div>
+                <div class="ext-meta">Luz Rivera · BookTok · emotional</div>
+                <div class="ext-text">Just finished &#x27;The Lizard in the Andaman&#x27;. The time loop is the main hook, but the social hierarchy is just a weird &#x27;Bilik&#x27; thing. I will rate this 3 stars. 😂</div></div><div class="card" style="border-left:3px solid #dc2626">
+                <div class="ext-rating" style="color:#dc2626">&#9733;&#9733;&#9734;&#9734;&#9734; 2.0</div>
+                <div class="ext-meta">Ivy Lee · BookTok · cheerleader</div>
+                <div class="ext-text">This book WRECKED me. It feels like a diary entry where the protagonist is just a victim of the &#x27;Bilik&#x27; mystery. I cried and screamed in the back of my head. Worth reading for the cover design, not the story.</div></div></div>
+    <div class="extremes-col"><h3 style="color:var(--green)">The Superfans</h3><div class="card" style="border-left:3px solid #16a34a">
+                <div class="ext-rating" style="color:#16a34a">&#9733;&#9733;&#9733;&#9733;&#9733; 5.0</div>
+                <div class="ext-meta">Astrid Yamamoto · Bookstagram · emotional</div>
+                <div class="ext-text">5.0 stars on [Book Title]. The &#x27;forbidden love&#x27; and &#x27;who done it&#x27; tropes are definitely on my radar. I&#x27;d recommend it to anyone who wants a cozy fantasy read with a forbidden love theme.</div></div><div class="card" style="border-left:3px solid #16a34a">
+                <div class="ext-rating" style="color:#16a34a">&#9733;&#9733;&#9733;&#9733;&#9733; 5.0</div>
+                <div class="ext-meta">Theodore Rodriguez · BookTok · cheerleader</div>
+                <div class="ext-text">This book WRECKED me. POV: I just finished &#x27;The Lizard in the Andaman&#x27;. I cried when I realized the &#x27;Bilik&#x27; is actually a metaphor for my own gender dysphoria. It&#x27;s not a book, it&#x27;s a diagnosis.</div></div><div class="card" style="border-left:3px solid #16a34a">
+                <div class="ext-rating" style="color:#16a34a">&#9733;&#9733;&#9733;&#9733;&#9733; 4.9</div>
+                <div class="ext-meta">Lillian Reeves · Bookstagram · emotional</div>
+                <div class="ext-text">4.9 stars. This is a stunningly atmospheric epic fantasy that feels like a high-quality, well-written adaptation of the Andaman mythology. The tone is rich and textured, and the pacing is deliberate. The social value metaphor is a brilliant, deep insight that elevates the story. It would definitely buy, especially given the price sensitivity for a hardcover. They would DNF due to &#x27;miscommunication&#x27; and &#x27;deus ex machina&#x27;.</div></div></div>
+  </div>
+</section>
+
+<!-- SOCIAL FEED -->
+<section class="section reveal" id="section-11">
+  <div class="section-header"><span class="section-num">11</span><h2 class="section-title">Simulated Social Feed</h2></div>
+  <p class="section-desc">The 25 most notable reactions across all platforms.</p>
+  <div class="feed-grid"><div class="feed-card">
+            <div class="feed-top"><span class="feed-platform" style="color:#ec4899">BookTok</span><span class="feed-name">Levi Mensah</span><span class="feed-tag tag-red">&#9733;&#9733; 1.8</span></div>
+            <div class="feed-text">📚 THIS BOOK WRECKED ME. Levi Mensah vs The Lizard in the Andaman: Myth, Memory, and the Sacred Eye of the Sea. 🌊🐍✨ The Bilik mystery is so complex that I feel like I&#x27;m watching a ghost. 🚫💀</div></div><div class="feed-card">
+            <div class="feed-top"><span class="feed-platform" style="color:#c026d3">Bookstagram</span><span class="feed-name">Astrid Yamamoto</span><span class="feed-tag tag-green">&#9733;&#9733;&#9733;&#9733;&#9733; 5.0</span></div>
+            <div class="feed-text">5.0 stars on [Book Title]. The &#x27;forbidden love&#x27; and &#x27;who done it&#x27; tropes are definitely on my radar. I&#x27;d recommend it to anyone who wants a cozy fantasy read with a forbidden love theme.</div></div><div class="feed-card">
+            <div class="feed-top"><span class="feed-platform" style="color:#c026d3">Bookstagram</span><span class="feed-name">Diego Wright</span><span class="feed-tag tag-green">&#9733;&#9733;&#9733;&#9733; 4.0</span></div>
+            <div class="feed-text">Cover art was the only thing that mattered! The dark interiors are perfect for a mystery book. It fits the &#x27;locked room mystery&#x27; vibe I&#x27;m looking for. Currently reading, this is a must-read for anyone who wants to find a &#x27;workplace romance&#x27; vibe. 4.0 stars. 4.0 stars. 4.0 stars.</div></div><div class="feed-card">
+            <div class="feed-top"><span class="feed-platform" style="color:#b45309">Goodreads</span><span class="feed-name">Mila Hawkins</span><span class="feed-tag tag-yellow">&#9733;&#9733;&#9733;&#9733; 3.8</span></div>
+            <div class="feed-text">3.8 stars. The narrative structure is a bit off-putting, but the &#x27;grumpy x sunshine&#x27; dynamic is a bit too much in a genre that usually demands a bit of grit. The &#x27;marriage of convenience&#x27; feels like a standard romantic setup. It would DNF due to &#x27;bully romance&#x27; and &#x27;toxic masculinity played straight&#x27;, and would DNF because the &#x27;price sensitivity&#x27; is too low for a 25+ hardcover. The &#x27;Bilik&#x27; mystery is a classic trope, and the social value metaphor is a deep insight that elevates the story.</div></div><div class="feed-card">
+            <div class="feed-top"><span class="feed-platform" style="color:#b45309">Goodreads</span><span class="feed-name">Luke Chase</span><span class="feed-tag tag-green">&#9733;&#9733;&#9733;&#9733; 4.5</span></div>
+            <div class="feed-text">Recommending &#x27;The Lizard in the Andaman&#x27;. The &#x27;Bilik&#x27; is a female figure, and the spider is a male figure. I&#x27;m not the only one who thinks the spider is the same entity as the monitor lizard. I&#x27;m a fan of the social value metaphor.</div></div><div class="feed-card">
+            <div class="feed-top"><span class="feed-platform" style="color:#b45309">Goodreads</span><span class="feed-name">Raj Moreau</span><span class="feed-tag tag-yellow">&#9733;&#9733;&#9733;&#9733; 3.5</span></div>
+            <div class="feed-text">Just finished &#x27;The Lizard in the Andaman&#x27;. I appreciate &#x27;villain origin story&#x27; and &#x27;underdog story&#x27; when done well. The plot feels fast-paced and the ending is satisfying. Thoughts: should I buy this if I&#x27;m a traditionalist who appreciates deep history, or is it just a good read for people who love complex mythology? (Price: $25 for hardcover, $15 for ebook. 3.5 stars if I love the plot, 4 if the tone is good.)</div></div><div class="feed-card">
+            <div class="feed-top"><span class="feed-platform" style="color:#b45309">Goodreads</span><span class="feed-name">Mei Harris</span><span class="feed-tag tag-yellow">&#9733;&#9733;&#9733; 3.3</span></div>
+            <div class="feed-text">The Lizard in the Andaman: Myth, Memory, and the Sacred Eye of the Sea. 3.5 stars. Comparing it to The Godfather, but with a bit more &#x27;The Lord of the Rings&#x27; fantasy twist. Definitely worth the price for the mythological stuff.</div></div><div class="feed-card">
+            <div class="feed-top"><span class="feed-platform" style="color:#ea580c">Reddit</span><span class="feed-name">Daniel Walker</span><span class="feed-tag tag-green">&#9733;&#9733;&#9733;&#9733; 4.2</span></div>
+            <div class="feed-text">Just finished &#x27;The Lizard in the Andaman&#x27;. It&#x27;s a nice read for the specific genre, but the ending feels like a quick fix rather than a full exploration of the taboo. Would recommend to anyone who loves the &#x27;fake dating&#x27; trope.</div></div><div class="feed-card">
+            <div class="feed-top"><span class="feed-platform" style="color:#ec4899">BookTok</span><span class="feed-name">Wei Mensah</span><span class="feed-tag tag-green">&#9733;&#9733;&#9733;&#9733; 4.2</span></div>
+            <div class="feed-text">POV: I&#x27;m reading this book, and I&#x27;m crying. This book WRECKED me. The &#x27;Bilik&#x27; mystery is just a fancy way of saying &#x27;I don&#x27;t have the courage to admit I&#x27;m weak enough to let anyone take over.&#x27;</div></div><div class="feed-card">
+            <div class="feed-top"><span class="feed-platform" style="color:#0ea5e9">X / Twitter</span><span class="feed-name">Aisha Hill</span><span class="feed-tag tag-green">&#9733;&#9733;&#9733;&#9733; 4.2</span></div>
+            <div class="feed-text">Re: The Lizard in the Andaman #1. I&#x27;m a bit of a &#x27;who done it&#x27; guy, so I&#x27;ll keep this at 4.0. The horror element is too subtle. I&#x27;m not sure I&#x27;d recommend it to anyone who cares about the origin story.</div></div></div>
+  <div class="feed-hidden" id="feedMore"><div class="feed-card">
+            <div class="feed-top"><span class="feed-platform" style="color:#ec4899">BookTok</span><span class="feed-name">Erik Laurent</span><span class="feed-tag tag-green">&#9733;&#9733;&#9733;&#9733; 4.1</span></div>
+            <div class="feed-text">4.1 stars on [Book Title]. The &#x27;forbidden love&#x27; and &#x27;who done it&#x27; tropes are definitely on my radar. I&#x27;d recommend it to anyone who wants to explore forbidden love without the drama.</div></div><div class="feed-card">
+            <div class="feed-top"><span class="feed-platform" style="color:#ec4899">BookTok</span><span class="feed-name">Theodore Rodriguez</span><span class="feed-tag tag-green">&#9733;&#9733;&#9733;&#9733;&#9733; 5.0</span></div>
+            <div class="feed-text">This book WRECKED me. POV: I just finished &#x27;The Lizard in the Andaman&#x27;. I cried when I realized the &#x27;Bilik&#x27; is actually a metaphor for my own gender dysphoria. It&#x27;s not a book, it&#x27;s a diagnosis.</div></div><div class="feed-card">
+            <div class="feed-top"><span class="feed-platform" style="color:#0ea5e9">X / Twitter</span><span class="feed-name">Wren Brown</span><span class="feed-tag tag-yellow">&#9733;&#9733;&#9733; 3.0</span></div>
+            <div class="feed-text">🚀🔥🚀 Wren Brown is a Hot Takes reader who finds this book boring. The &#x27;morally grey hero&#x27; is typical of fantasy tropes. I&#x27;m going to quote this tweet: &quot;The hero who fights for their own morality is a fantasy trope. This book is a fantasy that needs more world-building and less &#x27;one bed&#x27; setup. #SpaceOpera #FantasyBookTok #Boring&quot;</div></div><div class="feed-card">
+            <div class="feed-top"><span class="feed-platform" style="color:#c026d3">Bookstagram</span><span class="feed-name">Lillian Reeves</span><span class="feed-tag tag-green">&#9733;&#9733;&#9733;&#9733;&#9733; 4.9</span></div>
+            <div class="feed-text">4.9 stars. This is a stunningly atmospheric epic fantasy that feels like a high-quality, well-written adaptation of the Andaman mythology. The tone is rich and textured, and the pacing is deliberate. The social value metaphor is a brilliant, deep insight that elevates the story. It would definitely buy, especially given the price sensitivity for a hardcover. They would DNF due to &#x27;miscommunication&#x27; and &#x27;deus ex machina&#x27;.</div></div><div class="feed-card">
+            <div class="feed-top"><span class="feed-platform" style="color:#b45309">Goodreads</span><span class="feed-name">Nathan Hill</span><span class="feed-tag tag-yellow">&#9733;&#9733;&#9733;&#9733; 3.8</span></div>
+            <div class="feed-text">🌟👻📖 James is a 3.8 star reader, which is a bit high for a magical realism book that feels a bit too abstract. The forbidden love scene is intense, but the pacing is a bit slow. It&#x27;s a good read for the genre, but maybe not for the price.</div></div><div class="feed-card">
+            <div class="feed-top"><span class="feed-platform" style="color:#b45309">Goodreads</span><span class="feed-name">Audrey Sterling</span><span class="feed-tag tag-yellow">&#9733;&#9733;&#9733;&#9733; 3.8</span></div>
+            <div class="feed-text">3.8 stars on [Book Title]. The &#x27;friends to lovers&#x27; and &#x27;redemption arc&#x27; themes are solid choices for a Steampunk read. I&#x27;d recommend it to anyone looking for a strong female lead with a redemption arc.</div></div><div class="feed-card">
+            <div class="feed-top"><span class="feed-platform" style="color:#ea580c">Reddit</span><span class="feed-name">William Flores</span><span class="feed-tag tag-yellow">&#9733;&#9733;&#9733;&#9733; 3.8</span></div>
+            <div class="feed-text">Just finished &#x27;The Lizard in the Andaman&#x27;. The spider/monitor lizard parallel is so accurate to tribal identity. I&#x27;ll rate this 4.0 stars. 🍂</div></div><div class="feed-card">
+            <div class="feed-top"><span class="feed-platform" style="color:#ea580c">Reddit</span><span class="feed-name">Savannah Thomas</span><span class="feed-tag tag-yellow">&#9733;&#9733;&#9733;&#9733; 3.8</span></div>
+            <div class="feed-text">Just finished &#x27;The Godfather&#x27; and I have thoughts. Am I the only one who thinks the &#x27;Bilik&#x27; mystery is just a metaphor for the Mafia&#x27;s internal politics? I think the spider vs monitor lizard dynamic is a bit confusing.</div></div><div class="feed-card">
+            <div class="feed-top"><span class="feed-platform" style="color:#c026d3">Bookstagram</span><span class="feed-name">Lillian Gonzalez</span><span class="feed-tag tag-yellow">&#9733;&#9733;&#9733;&#9733; 3.8</span></div>
+            <div class="feed-text">📚Billionaire &amp; Underdog 📖The Lizard in the Andaman. It is an &#x27;epistolary format&#x27; novel about a &#x27;billionaire&#x27; and an &#x27;underdog&#x27; competitor for the &#x27;Lizard&#x27;. The &#x27;small town&#x27; setting and &#x27;road trip&#x27; elements are all there. The &#x27;Bilik&#x27; mystery is a bit too obvious. The cover design is absolutely stunning. I&#x27;m looking for a &#x27;haunted house&#x27; or &#x27;mafia romance&#x27; story, and this feels like a &#x27;dual timeline&#x27; mystery. I&#x27;m currently reading it. 📚📚✨</div></div><div class="feed-card">
+            <div class="feed-top"><span class="feed-platform" style="color:#0ea5e9">X / Twitter</span><span class="feed-name">Scarlett Scott</span><span class="feed-tag tag-yellow">&#9733;&#9733;&#9733;&#9733; 3.8</span></div>
+            <div class="feed-text">Just finished &#x27;The Lizard in the Andaman&#x27;. The morally grey hero supremacy is a must-read, and the mafia romance feels like a great read. Thoughts: is this a good read for people who love moral ambiguity and complex relationships? Or is it just a good read for people who want a fast-paced mystery? (Price: $25 for hardcover, $15 for ebook. 3.8 stars if I love the plot, 3.5 if the tone is good.)</div></div><div class="feed-card">
+            <div class="feed-top"><span class="feed-platform" style="color:#0ea5e9">X / Twitter</span><span class="feed-name">Aaliyah Shah</span><span class="feed-tag tag-green">&#9733;&#9733;&#9733;&#9733;&#9733; 4.8</span></div>
+            <div class="feed-text">👀Secret identity thriller 📖The Lizard in the Andaman. Is the Lizard a spy or a rival? The &#x27;small town&#x27; setting and &#x27;road trip&#x27; plot hooks are all there. I&#x27;m looking for a &#x27;haunted house&#x27; mystery or &#x27;workplace romance&#x27; story, and this feels like a mix of both. The cover art is stunning. I&#x27;m currently reading it. 📚💜</div></div><div class="feed-card">
+            <div class="feed-top"><span class="feed-platform" style="color:#b45309">Goodreads</span><span class="feed-name">Catalina Wilson</span><span class="feed-tag tag-yellow">&#9733;&#9733;&#9733;&#9733; 3.5</span></div>
+            <div class="feed-text">3.5 stars on [Book Title]. The &#x27;epistolary format&#x27; is a nice touch, but the &#x27;locked room mystery&#x27; is a bit generic for a YA Fantasy book. I&#x27;d recommend it to anyone looking for a locked room mystery with an epistolary format.</div></div><div class="feed-card">
+            <div class="feed-top"><span class="feed-platform" style="color:#b45309">Goodreads</span><span class="feed-name">Joseph Park</span><span class="feed-tag tag-yellow">&#9733;&#9733; 2.5</span></div>
+            <div class="feed-text">3.0 stars on Goodreads. &#x27;Too much world building for YA romance. The &#x27;Bilik&#x27; mystery feels like a plot hole I can&#x27;t fix. This isn&#x27;t a classic fantasy novel; it&#x27;s a textbook on how to make a zombie apocalypse sound like a fairy tale. I&#x27;ll be reading it for 2 months, just to decompress. If it&#x27;s not a masterpiece, it&#x27;s a bad book. (3.5 stars rounded up).</div></div><div class="feed-card">
+            <div class="feed-top"><span class="feed-platform" style="color:#b45309">Goodreads</span><span class="feed-name">Natalie Lopez</span><span class="feed-tag tag-yellow">&#9733;&#9733;&#9733;&#9733; 3.5</span></div>
+            <div class="feed-text">goodreads: I&#x27;m a sapphic romance evangelist, but this book is so much more complex than I expected. The &#x27;Bilik&#x27; mystery is genuinely haunting, but it&#x27;s worth the wait.</div></div><div class="feed-card">
+            <div class="feed-top"><span class="feed-platform" style="color:#c026d3">Bookstagram</span><span class="feed-name">Benjamin Costa</span><span class="feed-tag tag-yellow">&#9733;&#9733;&#9733;&#9733; 3.5</span></div>
+            <div class="feed-text">Currently reading &#x27;The Lizard in the Andaman&#x27;. The social taboo of the Bilika is a dangerous belief in anger. I have thoughts on the mystery of the female Bilika. I&#x27;m not the only one who thinks the spider is the same entity as the monitor lizard.</div></div></div>
+  <button class="btn-outline" onclick="toggleFeed()">Show all 25 posts</button>
+</section>
+
+<!-- CONTROVERSY -->
+<section class='section reveal' id='section-12'><div class='section-header'><span class='section-num'>12</span><h2 class='section-title'>Controversy Radar</h2></div><div class="list-item list-item-warning">Gender identity vs social taboo</div><div class="list-item list-item-warning">World-building density</div><div class="list-item list-item-warning">Time loop vs social hierarchy</div><div class="list-item list-item-warning">Social hierarchy vs reverse harem</div><div class="list-item list-item-warning">The &#x27;Bilik&#x27; gender debate and the &#x27;social value&#x27; metaphor are the only real points of contention.</div><div class="list-item list-item-warning">The &#x27;Bilik&#x27; gender debate and the &#x27;social value&#x27; metaphor are the only real points of contention.</div><div class="list-item list-item-warning">The &#x27;Bilik&#x27; gender debate and the &#x27;forced proximity&#x27; trope are the only real points of contention.</div><div class="list-item list-item-warning">The &#x27;morally grey hero&#x27; trope is the only real points of contention.</div><div class="list-item list-item-warning">The gender of the &#x27;Bilik&#x27; and the &#x27;social value&#x27; of honey vs. bones.</div><div class="list-item list-item-warning">The &#x27;Bilik&#x27; mystery is too ambiguous for a fast-paced read.</div></section>
+
+<!-- DNF -->
+<section class='section reveal' id='section-13'><div class='section-header'><span class='section-num'>13</span><h2 class='section-title'>DNF Analysis (48 would quit)</h2></div><div class="list-item list-item-danger">The story feels like a cheap, shallow take on the Andaman myths. It lacks the deep social value of the &#x27;Bilik&#x27; metaphor compared to the actual narrative depth. <span class="list-meta">(3 readers)</span></div><div class="list-item list-item-danger">The plot is a bit too generic for my comfort zone. The &#x27;Spider vs. Lizard&#x27; dynamic feels like a standard trope without any unique twist. <span class="list-meta">(3 readers)</span></div><div class="list-item list-item-danger">bully romance and toxic masculinity played straight <span class="list-meta">(2 readers)</span></div><div class="list-item list-item-danger">The pacing is too slow for my brain to process. It feels like I&#x27;m reading a novel I&#x27;m already reading. <span class="list-meta">(2 readers)</span></div><div class="list-item list-item-danger">The pacing feels too slow for a &#x27;who done it&#x27; story, and the &#x27;evil ex&#x27; hate makes it feel too generic. <span class="list-meta">(2 readers)</span></div><div class="list-item list-item-danger">The &#x27;evil ex&#x27; hate is a bit heavy for a &#x27;forced proximity&#x27; reader. The story is too dark. <span class="list-meta">(2 readers)</span></div><div class="list-item list-item-danger">The &#x27;Bilik&#x27; gender mystery is a hallucination, the pacing is too slow for 59 books, and it&#x27;s a lot of world-building. <span class="list-meta">(1 readers)</span></div><div class="list-item list-item-danger">The &#x27;Bilik&#x27; is a hallucination, the pacing is too slow, and it&#x27;s a lot of world-building. <span class="list-meta">(1 readers)</span></div><div class="list-item list-item-danger">The tone is too heavy and the pacing is too slow for a 29-35 year old urban reader who prefers modern romance tropes. It feels like a book that shouldn&#x27;t be read at all. <span class="list-meta">(1 readers)</span></div><div class="list-item list-item-danger">The &#x27;Bilik&#x27; mystery is too dark and the world-building is too complex for a standard YA modern reader, making it feel like an adult fantasy book. <span class="list-meta">(1 readers)</span></div></section>
+
+<!-- TIMELINE -->
+<section class="section reveal" id="section-timeline">
+            <div class="section-header"><span class="section-num">01</span><h2 class="section-title">Round Timeline</h2></div>
+            <p class="section-desc">How the conversation evolved across 3 rounds.</p>
+            <div class="card chart-card"><canvas id="timelineChart" height="200"></canvas></div>
+            <div class="tl-grid"><div class="card tl-card">
+                <div class="tl-round">R1</div>
+                <div class="tl-rating">3.51</div>
+                <div class="tl-readers">93 readers</div>
+                </div><div class="card tl-card">
+                <div class="tl-round">R2</div>
+                <div class="tl-rating">4.23</div>
+                <div class="tl-readers">52 readers</div>
+                <div class="tl-shifts">
+                    <span class="tl-badge tl-up">+15</span>
+                    <span class="tl-badge tl-down">-20</span>
+                    <span class="tl-badge tl-pol">3</span></div></div><div class="card tl-card">
+                <div class="tl-round">R3</div>
+                <div class="tl-rating">3.99</div>
+                <div class="tl-readers">101 readers</div>
+                <div class="tl-shifts">
+                    <span class="tl-badge tl-up">+43</span>
+                    <span class="tl-badge tl-down">-46</span>
+                    <span class="tl-badge tl-pol">3</span></div></div></div>
+        </section>
+
+<!-- SOCIAL ROUNDS -->
+<section class="section reveal" id="section-social">
+            <div class="section-header"><span class="section-num">02</span><h2 class="section-title">The Conversation</h2></div>
+            <p class="section-desc">Across 2 rounds of social interaction.</p>
+            <div class="shift-grid">
+                <div class="card shift-card"><div class="shift-val shift-green" data-count-to="58" data-decimals="0">0</div><div class="shift-label">More Positive</div></div>
+                <div class="card shift-card"><div class="shift-val shift-red" data-count-to="66" data-decimals="0">0</div><div class="shift-label">More Negative</div></div>
+                <div class="card shift-card"><div class="shift-val" data-count-to="23" data-decimals="0">0</div><div class="shift-label">Unchanged</div></div>
+                <div class="card shift-card"><div class="shift-val shift-purple" data-count-to="6" data-decimals="0">0</div><div class="shift-label">Polarized</div></div>
+            </div>
+            <div class="social-feed"><div class="round-group">
+                <div class="round-label">Round 2</div>
+                <div class="social-post">
+                    <div class="social-meta">Replying to <strong>The Lizard in the Andaman</strong> · Sofia Wright · Reddit</div>
+                    <div class="social-text">Honestly, the &#x27;morally grey hero&#x27; is a classic trap. It feels like everyone is fighting for their own morality, yet the story ends on a cliffhanger that makes you question if the hero truly cares about the world. The world-building feels thin compared to how many other books I read. It&#x27;s a fantasy that needs more depth, not just more &#x27;one bed&#x27; setups.</div></div><div class="social-post">
+                    <div class="social-meta">Replying to <strong>The Lizard in the Andaman</strong> · Miguel Dubois · Reddit</div>
+                    <div class="social-text">The &#x27;forced proximity&#x27; is such a lazy trope, but it works when the stakes are high and the romance is genuine. The age gap is lazy, but that&#x27;s okay for a slow burn. I&#x27;d also love to see a discussion on why &#x27;academic/dark academia&#x27; works for this specific character dynamic. Just finished and I have thoughts.</div></div><div class="social-post">
+                    <div class="social-meta">Replying to <strong>The Lizard in the Andaman</strong> · Min-woo Khan · BookTok</div>
+                    <div class="social-text">The ending feels like a quick fix rather than a full exploration of the taboo. Who knows what the real stakes were? Honestly, this book WRECKED me. It&#x27;s a YA Contemporary that needs more world-building and less &#x27;insta-love&#x27; setup. Pile on.</div></div><div class="social-post">
+                    <div class="social-meta">Replying to <strong>The Lizard in the Andaman</strong> · Ivy Nash · Bookstagram</div>
+                    <div class="social-text">Currently reading. The cover design is so aesthetic and the vibe is flat. Definitely flat lays and fairy lights. I&#x27;m a bit skeptical about excessive world-building for this genre, but the pacing is okay. Would recommend to anyone who loves the &#x27;academic/dark academia&#x27; trope.</div></div><div class="social-post">
+                    <div class="social-meta">Replying to <strong>The Lizard in the Andaman</strong> · Jackson Carter · Goodreads</div>
+                    <div class="social-text">I rate harshly because I care. The first person present tense is a classic offender. Kidnapping romance is also a nightmare for my heart. Dream sequences are a total waste of time. The &#x27;mentor figure&#x27; trope is okay, but the overall structure feels too rushed. Just finished 33 books.</div></div><div class="social-post">
+                    <div class="social-meta">Replying to <strong>general</strong> · Min-ji Lee · Goodreads</div>
+                    <div class="social-text">The &#x27;Lizard in the Andaman&#x27; ending is a classic trap, but Luke&#x27;s social proof is undeniable. I&#x27;m not going to share a star because I&#x27;ve seen too many &#x27;academic/dark academia&#x27; readers get burned by this specific genre, but I&#x27;ll keep my rating high for the &#x27;magical realism&#x27; angle. The &#x27;Bilik&#x27; and &#x27;Spider&#x27; dynamic is exactly where the social value metaphor comes in, and I&#x27;m willing to pay attention to it. No spoilers, but I&#x27;ll share my thoughts on the &#x27;academic&#x27; vibe. 
+
+--- 
+
+#SpaceOpera #FantasyBookTok #Boring</div></div><div class="social-post">
+                    <div class="social-meta">Replying to <strong>general</strong> · Natalie Lopez · Goodreads</div>
+                    <div class="social-text">Okay, Natalie, I read this a few times and I still can&#x27;t figure out how the &#x27;mafia romance&#x27; subplot works if it&#x27;s not about the &#x27;love triangle&#x27;. The &#x27;slut shaming&#x27; is definitely the enemy of sapphic romance, but it&#x27;s a very specific niche. I&#x27;ll keep my rating at 4.5 because I want to push back against the &#x27;fake dating&#x27; narrative. I&#x27;m still not going to share a star, but I&#x27;ll share my thoughts on the &#x27;found family&#x27; and &#x27;unreliable narrator&#x27; tropes. 
+
+--- 
+
+#SpaceOpera #FantasyBookTok #Boring</div></div><div class="social-post">
+                    <div class="social-meta">Replying to <strong>general</strong> · Abigail Nelson · BookTok</div>
+                    <div class="social-text">Wow, I&#x27;m going to throw this book out the window. Forbidden love, bodyguard romance, and the lack of a &#x27;chosen one&#x27; ending is the most boring stuff I&#x27;ve read this year. I&#x27;ll delete this book from my &#x27;shelf&#x27; for now. 
+
+--- 
+
+#SpaceOpera #FantasyBookTok #Boring</div></div><div class="social-post">
+                    <div class="social-meta">Replying to <strong>general</strong> · Elias Okafor · BookTok</div>
+                    <div class="social-text">I&#x27;m going to throw this book out the window. The &#x27;forced proximity&#x27; and &#x27;grumpy x sunshine&#x27; trope is the exact same as the &#x27;Lizard in the Andaman&#x27; one, but with more world-building and less &#x27;one bed&#x27; setup. I&#x27;ll delete this book from my &#x27;shelf&#x27; for now. 
+
+--- 
+
+#SpaceOpera #FantasyBookTok #Boring</div></div><div class="social-post">
+                    <div class="social-meta">Replying to <strong>general</strong> · Iris Clark · Goodreads</div>
+                    <div class="social-text">I&#x27;m going to throw this book out the window. The &#x27;time loop&#x27; and &#x27;love triangle&#x27; trope is the same as the &#x27;Lizard in the Andaman&#x27; one, but the ending feels like a quick fix rather than a full exploration. I&#x27;ll delete this book from my &#x27;shelf&#x27; for now. 
+
+--- 
+
+#SpaceOpera #FantasyBookTok #Boring</div></div></div><div class="round-group">
+                <div class="round-label">Round 3</div>
+                <div class="social-post">
+                    <div class="social-meta">Replying to <strong>Briar Ferreira</strong> · Briar Ferreira · BookTok</div>
+                    <div class="social-text">The locked room mystery is definitely the real meat, but the gender of the Bilik and the academic vibe are just... nice. Still, I&#x27;m still crying about the quick fix ending, but the &#x27;epistolary&#x27; part of the book is so cool! Hope the &#x27;slow burn&#x27; part is more realistic. The vibe is so strong.</div></div><div class="social-post">
+                    <div class="social-meta">Replying to <strong>Ethan Quinn</strong> · Ethan Quinn · BookTok</div>
+                    <div class="social-text">Academic and dark academia are a must for me, and the mentor figure is the highlight! I loved the &#x27;slow burn&#x27; too. The quick fix ending is a minor point, but I really enjoyed the POV and the emotional connection to the mentor. It&#x27;s a bit cliché, but the quality is still great.</div></div><div class="social-post">
+                    <div class="social-meta">Replying to <strong>Zoe Sanchez</strong> · Zoe Sanchez · Bookstagram</div>
+                    <div class="social-text">Reverse Harem + Friendship is the real meat! The chosen one and marriage of convenience are great tropes. I&#x27;m still a bit wary of the &#x27;amnesia&#x27; element, but the epistolary format really shines. The &#x27;friends to lovers&#x27; vibe is so real! Definitely a must-read.</div></div><div class="social-post">
+                    <div class="social-meta">Replying to <strong>Benjamin Costa</strong> · Benjamin Costa · Bookstagram</div>
+                    <div class="social-text">The villain origin story is the real meat, but the &#x27;bodyguard romance&#x27; and &#x27;found family&#x27; are a bit flat. I think the &#x27;slow burn&#x27; is better than the &#x27;fake dating&#x27; tropes, but I still hate the &#x27;multiple POV&#x27; aspect. The aesthetic and the mood are really good.</div></div><div class="social-post">
+                    <div class="social-meta">Replying to <strong>Joseph Park</strong> · Joseph Park · Goodreads</div>
+                    <div class="social-text">The &#x27;fake dating&#x27; and &#x27;excessive world building&#x27; are the real meat, but the &#x27;slow burn&#x27; is so real! I love the analytical reviews and the &#x27;flat lays&#x27;. The vibe is definitely a must for someone who wants to decompress. Just hate the &#x27;dead parents&#x27; and &#x27;first person&#x27; tropes.</div></div><div class="social-post">
+                    <div class="social-meta">Replying to <strong>Abigail Nelson</strong> · Abigail Nelson · BookTok</div>
+                    <div class="social-text">🥀POV: I just finished &#x27;The Lizard in the Andaman&#x27;—the ending was so quick I cried. The &#x27;Bilik&#x27; was a joke, but the *mystery* of the locked room was so good I didn&#x27;t even read the first chapter. The gender of the &#x27;Bilik&#x27; is the real meat of the book, but the &#x27;academic/dark academia&#x27; vibe is so good. Would recommend to anyone who loves the &#x27;academic/dark academia&#x27; trope. 📚✨</div></div><div class="social-post">
+                    <div class="social-meta">Replying to <strong>Abigail Nelson</strong> · Wren Brown · X_Twitter</div>
+                    <div class="social-text">🤔Hot take in under 280 characters: &#x27;I&#x27;m not buying this one because I hate &#x27;deus ex machina&#x27; and &#x27;first person present tense&#x27;, but you can&#x27;t deny the &#x27;academic/dark academia&#x27; vibe is so good. The gender of the &#x27;Bilik&#x27; is the real meat, but the mystery is so strong. Would recommend to anyone who loves the &#x27;academic/dark academia&#x27; trope. 📚🔥</div></div><div class="social-post">
+                    <div class="social-meta">Replying to <strong>Abigail Nelson</strong> · Mila Hawkins · Goodreads</div>
+                    <div class="social-text">🤷‍♀️I&#x27;m not buying this one because I hate &#x27;deus ex machina&#x27; and &#x27;first person present tense&#x27;, but you can&#x27;t deny the &#x27;academic/dark academia&#x27; vibe is so good. The gender of the &#x27;Bilik&#x27; is the real meat, but the mystery is so strong. Would recommend to anyone who loves the &#x27;academic/dark academia&#x27; trope. 📚🔥</div></div><div class="social-post">
+                    <div class="social-meta">Replying to <strong>Abigail Nelson</strong> · Sophia Green · Bookstagram</div>
+                    <div class="social-text">🥇Aesthetic-focused: The cover design is insane. But the &#x27;locked room mystery&#x27; trope is so cliché that even my best fans aren&#x27;t buying it. Just finished &#x27;The Lizard in the Andaman&#x27;, the ending was a quick fix. The gender of the &#x27;Bilik&#x27; is the real meat of the book, but the &#x27;academic/dark academia&#x27; vibe is so good. Would recommend to anyone who loves the &#x27;academic/dark academia&#x27; trope. 📚✨</div></div><div class="social-post">
+                    <div class="social-meta">Replying to <strong>Abigail Nelson</strong> · Keiko Tanaka · Goodreads</div>
+                    <div class="social-text">🗝️Book club organizer: Ya fantasy evangelist. Will DNF if excessive world building shows up. I&#x27;m still going to rate this low because the &#x27;locked room mystery&#x27; trope is so cliché that even my best fans aren&#x27;t buying it. Just finished &#x27;The Lizard in the Andaman&#x27;, the ending was a quick fix. The gender of the &#x27;Bilik&#x27; is the real meat of the book, but the &#x27;academic/dark academia&#x27; vibe is so good. Would recommend to anyone who loves the &#x27;academic/dark academia&#x27; trope. 📚🔥</div></div></div></div>
+        </section>
+
+<!-- VIRALITY -->
+<section class="section reveal" id="section-14">
+  <div class="section-header"><span class="section-num">14</span><h2 class="section-title">Viral Potential</h2></div>
+  <div class="card virality-box">
+    <div class="gauge-wrap">
+      <svg viewBox="0 0 200 200" class="gauge-svg">
+        <circle cx="100" cy="100" r="85" class="gauge-bg"/>
+        <circle cx="100" cy="100" r="85" class="gauge-fill" stroke="#eab308" stroke-dasharray="534.1" stroke-dashoffset="534.1" data-target-offset="216.3"/>
+      </svg>
+      <div class="gauge-value" style="color:#eab308" data-count-to="59.5" data-decimals="0">0</div>
+    </div>
+    <div class="gauge-label">Moderate Buzz</div>
+  </div>
+</section>
+
+<!-- RECOMMENDATIONS -->
+<section class="section reveal" id="section-15">
+  <div class="section-header"><span class="section-num">15</span><h2 class="section-title">Recommended Next Steps</h2></div>
+  <p class="section-desc">Data-driven action items based on your simulation results.</p>
+  <div class="recs-grid"><div class="card rec-card" style="border-left:3px solid #eab308">
+            <div class="rec-title">Polarizing Concept</div>
+            <div class="rec-desc">Your book splits opinion — that&#x27;s not bad. Polarizing books often build passionate fanbases. Lean into what makes it divisive.</div></div><div class="card rec-card" style="border-left:3px solid #dc2626">
+            <div class="rec-title">High DNF Risk (52%)</div>
+            <div class="rec-desc">Over a quarter of readers would quit. Top reason: &quot;The story feels like a cheap, shallow take on the Andaman myths. It lacks the deep social value of the &#x27;Bilik&#x27; metaphor compared to the actual narrative depth.&quot;. Address this in your opening chapters or blurb positioning.</div></div><div class="card rec-card" style="border-left:3px solid #16a34a">
+            <div class="rec-title">Controversy Is Your Superpower</div>
+            <div class="rec-desc">20 debate points detected. Controversial books get talked about. Use these friction points in your marketing.</div></div><div class="card rec-card" style="border-left:3px solid #dc2626">
+            <div class="rec-title">Engagement Gap (Bored, 22%)</div>
+            <div class="rec-desc">The dominant reaction is disengagement. Consider raising the stakes earlier, adding a stronger hook, or making your unique angle more prominent.</div></div><div class="card rec-card" style="border-left:3px solid #eab308">
+            <div class="rec-title">Moderate Buzz Potential</div>
+            <div class="rec-desc">Your book could generate organic conversation. Create shareable content around your most controversial or emotional angles.</div></div><div class="card rec-card" style="border-left:3px solid #16a34a">
+            <div class="rec-title">Social Proof Boosting Ratings</div>
+            <div class="rec-desc">Ratings rose from 3.5 to 4.0 as readers talked. Invest in book club outreach and reader communities.</div></div><div class="card rec-card" style="border-left:3px solid #16a34a">
+            <div class="rec-title">Target: Diverse Explorers</div>
+            <div class="rec-desc">Your strongest demographic is Diverse Explorers (3.8, 36% buy rate). Focus marketing here.</div></div><div class="card rec-card" style="border-left:3px solid #dc2626">
+            <div class="rec-title">Weak With: Senior Traditionalists</div>
+            <div class="rec-desc">Senior Traditionalists rated you 3.2 with 50% DNF. Adjust your pitch or deprioritize.</div></div><div class="card rec-card" style="border-left:3px solid #dc2626">
+            <div class="rec-title">Low Purchase Intent (29%)</div>
+            <div class="rec-desc">Only 29% would buy. Improve the premise, cover, and blurb before investing in marketing.</div></div></div>
+</section>
+
+<!-- SHARE -->
+<section class="section reveal" id="section-share">
+  <div class="share-card">
+    <div class="share-badge">Readers · 93 AI Readers</div>
+    <div class="share-num">3.5</div>
+    <div class="share-stars"><span class="star-filled">&#9733;</span><span class="star-filled">&#9733;</span><span class="star-filled">&#9733;</span><span class="star-half">&#9733;</span><span class="star-empty">&#9734;</span></div>
+    <div class="share-meta">3 rounds · 60 virality · 52% DNF · 20 controversies</div>
+  </div>
+  <p class="share-hint">Screenshot this card to share on social media</p>
+</section>
+
+<!-- FOOTER -->
+<div class="report-footer">
+  <div class="footer-brand">Readers</div>
+  <p>93 AI Readers · 3 Rounds of Social Simulation</p>
+</div>
+
+</div>
+
+<script>
+const timelineData = [{"round": 1, "avg_rating": 3.5053763440860215, "active_readers": 93, "sentiment_shifts": null, "top_trending": []}, {"round": 2, "avg_rating": 4.230769230769231, "active_readers": 52, "sentiment_shifts": {"more_positive": 15, "more_negative": 20, "unchanged": 14, "polarized": 3}, "top_trending": ["\ud83d\udcda THIS BOOK WRECKED ME. Levi Mensah vs The Lizard in the Andaman: Myth, Memory, ", "POV: I'm reading this book, and I'm crying. This book WRECKED me. The 'Bilik' my", "This book WRECKED me. POV: I just finished 'The Lizard in the Andaman'. I cried "]}, {"round": 3, "avg_rating": 3.993069306930693, "active_readers": 101, "sentiment_shifts": {"more_positive": 43, "more_negative": 46, "unchanged": 9, "polarized": 3}, "top_trending": ["Island setting is the key. A mafia romance with an island backdrop really sells.", "This is a classic trope, but it's also the most honest way to tell the story. Th", "I completely agree with you. A 'morally grey hero' is a fantasy trope, not a her"]}];
+
+function countUp(el, target, dur) {
+  dur = dur || 1200;
+  const dec = parseInt(el.dataset.decimals || '0');
+  let start = null;
+  const step = (ts) => {
+    if (!start) start = ts;
+    const p = Math.min((ts - start) / dur, 1);
+    const e = 1 - Math.pow(1 - p, 3);
+    el.textContent = (target * e).toFixed(dec);
+    if (p < 1) requestAnimationFrame(step);
+    else el.textContent = target.toFixed(dec);
+  };
+  requestAnimationFrame(step);
+}
+
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(e => {
+    if (e.isIntersecting) {
+      e.target.classList.add('visible');
+      e.target.querySelectorAll('[data-count-to]').forEach(el => {
+        if (!el._c) { el._c = true; countUp(el, parseFloat(el.dataset.countTo)); }
+      });
+      e.target.querySelectorAll('.dist-bar[data-target-width]').forEach(b => {
+        if (!b._a) { b._a = true; setTimeout(() => { b.style.width = b.dataset.targetWidth; }, 100); }
+      });
+      e.target.querySelectorAll('.gauge-fill[data-target-offset]').forEach(g => {
+        if (!g._a) { g._a = true; setTimeout(() => { g.style.strokeDashoffset = g.dataset.targetOffset; }, 200); }
+      });
+    }
+  });
+}, { threshold: 0.15 });
+document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+
+const navObs = new IntersectionObserver((entries) => {
+  entries.forEach(e => {
+    if (e.isIntersecting) {
+      document.querySelectorAll('.nav-dot').forEach(d => d.classList.remove('active'));
+      const dot = document.querySelector('.nav-dot[data-section="' + e.target.id + '"]');
+      if (dot) dot.classList.add('active');
+    }
+  });
+}, { threshold: 0.3 });
+document.querySelectorAll('[id^="hero"],[id^="section-"]').forEach(el => navObs.observe(el));
+
+function toggleFeed() {
+  const m = document.getElementById('feedMore');
+  const b = document.querySelector('.btn-outline');
+  if (m.style.display === 'none' || !m.style.display) {
+    m.style.display = 'grid'; m.style.gap = '8px';
+    b.textContent = 'Show fewer';
+  } else {
+    m.style.display = 'none';
+    b.textContent = 'Show all 25 posts';
+  }
+}
+
+// Timeline Chart
+(function() {
+  const canvas = document.getElementById('timelineChart');
+  if (!canvas || timelineData.length < 2) return;
+  const ctx = canvas.getContext('2d');
+  const rect = canvas.parentElement.getBoundingClientRect();
+  canvas.width = rect.width - 48;
+  canvas.height = 200;
+  const W = canvas.width, H = canvas.height;
+  const pad = { top:20, right:30, bottom:40, left:50 };
+  const pW = W - pad.left - pad.right, pH = H - pad.top - pad.bottom;
+  const data = timelineData.filter(d => d.avg_rating !== null);
+  if (data.length < 2) return;
+  const minR = Math.floor(Math.min(...data.map(d => d.avg_rating)) * 2) / 2;
+  const maxR = Math.ceil(Math.max(...data.map(d => d.avg_rating)) * 2) / 2;
+  const range = Math.max(maxR - minR, 0.5);
+  function xP(i) { return pad.left + (i / (data.length - 1)) * pW; }
+  function yP(v) { return pad.top + (1 - (v - minR) / range) * pH; }
+
+  ctx.strokeStyle = '#e4e4e7'; ctx.lineWidth = 1;
+  for (let v = minR; v <= maxR; v += 0.5) {
+    const y = yP(v);
+    ctx.beginPath(); ctx.moveTo(pad.left, y); ctx.lineTo(W - pad.right, y); ctx.stroke();
+    ctx.fillStyle = '#a1a1aa'; ctx.font = '11px JetBrains Mono, monospace';
+    ctx.textAlign = 'right'; ctx.fillText(v.toFixed(1), pad.left - 8, y + 4);
+  }
+  ctx.textAlign = 'center'; ctx.fillStyle = '#71717a';
+  data.forEach((d, i) => { ctx.fillText('R' + d.round, xP(i), H - pad.bottom + 20); });
+
+  const grad = ctx.createLinearGradient(pad.left, 0, W - pad.right, 0);
+  grad.addColorStop(0, '#2563eb'); grad.addColorStop(1, '#7c3aed');
+  ctx.strokeStyle = grad; ctx.lineWidth = 2.5; ctx.lineJoin = 'round'; ctx.beginPath();
+  data.forEach((d, i) => { const x = xP(i), y = yP(d.avg_rating); if (i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y); });
+  ctx.stroke();
+
+  const aG = ctx.createLinearGradient(0, pad.top, 0, H - pad.bottom);
+  aG.addColorStop(0, 'rgba(37,99,235,0.08)'); aG.addColorStop(1, 'rgba(37,99,235,0)');
+  ctx.fillStyle = aG; ctx.beginPath();
+  data.forEach((d, i) => { const x = xP(i), y = yP(d.avg_rating); if (i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y); });
+  ctx.lineTo(xP(data.length - 1), H - pad.bottom); ctx.lineTo(pad.left, H - pad.bottom);
+  ctx.closePath(); ctx.fill();
+
+  data.forEach((d, i) => {
+    const x = xP(i), y = yP(d.avg_rating);
+    ctx.fillStyle = '#ffffff';
+    ctx.beginPath(); ctx.arc(x, y, 5, 0, Math.PI * 2); ctx.fill();
+    ctx.fillStyle = i === 0 ? '#2563eb' : '#7c3aed';
+    ctx.beginPath(); ctx.arc(x, y, 3.5, 0, Math.PI * 2); ctx.fill();
+    ctx.fillStyle = '#09090b'; ctx.font = 'bold 11px JetBrains Mono, monospace';
+    ctx.textAlign = 'center'; ctx.fillText(d.avg_rating.toFixed(2), x, y - 12);
+  });
+})();
+</script>
+</body>
+</html>
